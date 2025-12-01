@@ -167,7 +167,18 @@ const Messages = () => {
       fetchConversations();
     } catch (error: any) {
       console.error('Failed to create conversation:', error);
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Không thể tạo cuộc trò chuyện';
+      let errorMessage = 'Không thể tạo cuộc trò chuyện';
+      if (error.response?.data?.error) {
+        errorMessage = typeof error.response.data.error === 'string' 
+          ? error.response.data.error 
+          : String(error.response.data.error);
+      } else if (error.response?.data?.message) {
+        errorMessage = typeof error.response.data.message === 'string' 
+          ? error.response.data.message 
+          : String(error.response.data.message);
+      } else if (error.message) {
+        errorMessage = typeof error.message === 'string' ? error.message : String(error.message);
+      }
       toast.error(errorMessage);
     }
   };

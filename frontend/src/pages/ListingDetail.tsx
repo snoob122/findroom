@@ -179,7 +179,13 @@ const ListingDetail = () => {
       fetchReviews();
       fetchListing(); // Refresh để cập nhật rating
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Không thể đánh giá');
+      let errorMessage = 'Không thể đánh giá';
+      if (error.response?.data?.error) {
+        errorMessage = typeof error.response.data.error === 'string' 
+          ? error.response.data.error 
+          : String(error.response.data.error);
+      }
+      toast.error(errorMessage);
     }
   };
 

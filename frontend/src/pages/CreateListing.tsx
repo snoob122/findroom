@@ -141,7 +141,13 @@ const CreateListing = () => {
       navigate(`/listings/${response.data.listing._id}`);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response?.data?.error || 'Không thể đăng tin');
+      let errorMessage = 'Không thể đăng tin';
+      if (error.response?.data?.error) {
+        errorMessage = typeof error.response.data.error === 'string' 
+          ? error.response.data.error 
+          : String(error.response.data.error);
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

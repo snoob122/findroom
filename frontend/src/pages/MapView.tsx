@@ -717,7 +717,13 @@ const FloodReportModal = ({ onClose, onSuccess }: FloodReportModalProps) => {
       onSuccess();
     } catch (error: any) {
       console.error('Failed to submit flood report:', error);
-      toast.error(error.response?.data?.error || 'Không thể gửi báo cáo');
+      let errorMessage = 'Không thể gửi báo cáo';
+      if (error.response?.data?.error) {
+        errorMessage = typeof error.response.data.error === 'string' 
+          ? error.response.data.error 
+          : String(error.response.data.error);
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
