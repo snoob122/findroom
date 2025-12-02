@@ -40,8 +40,16 @@ interface Message {
   read: boolean;
 }
 
+interface AuthUser {
+  _id: string;
+  name: string;
+  email?: string;
+  avatar?: string
+}
+
 const Messages = () => {
-  const { user } = useAuth();
+  const { user: contextUser } = useAuth();
+  const user = contextUser as AuthUser | null;
   const { listingId, recipientId } = useParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);

@@ -3,8 +3,19 @@ import axios from '../config/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 
+// 1. ADDED: Local interface to fix the missing 'phone' and 'gender' errors
+interface AuthUser {
+  name: string;
+  email: string;
+  phone?: string;
+  gender?: string;
+}
+
 const Profile = () => {
-  const { user } = useAuth();
+  // 2. MODIFIED: Cast the user to our local AuthUser interface
+  const { user: contextUser } = useAuth();
+  const user = contextUser as AuthUser | null;
+
   const [activeTab, setActiveTab] = useState('profile');
   const [profileData, setProfileData] = useState({
     name: '',
@@ -36,9 +47,11 @@ const Profile = () => {
     if (user) {
       setProfileData({
         name: user.name,
+        // 3. FIX: TypeScript now knows 'phone' exists on AuthUser
         phone: user.phone || '',
         email: user.email,
-        gender: (user as any).gender || ''
+        // 4. FIX: Removed unnecessary (user as any) cast since 'gender' is now in AuthUser
+        gender: user.gender || ''
       });
     }
   }, [user]);
@@ -254,11 +267,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-
-
-
-
-
-
-
