@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/auth/login",
-      "destination": "https://findroom-production.up.railway.app/api/auth/login"
-    }
-  ]
-}
