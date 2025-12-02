@@ -74,7 +74,7 @@
       }
     }, [token]);
 
-    const login = async (email: string, password: string) => {
+    /*const login = async (email: string, password: string) => {
       try {
         const response = await axios.post('/api/auth/login', { email, password });
         const { token: newToken, user: userData } = response.data;
@@ -89,6 +89,19 @@
         toast.error(message);
         // Throw a new error with string message instead of the original error object
         throw new Error(message);
+      }
+    };*/
+    const login = async (email: string, password: string) => {
+      try {
+          const RAILWAY_URL = 'https://findroom-production.up.railway.app';
+          
+          const response = await axios.post(
+              `${RAILWAY_URL}/api/auth/login`, // <--- ABSOLUTE URL HERE
+              { email, password }
+          );
+          // ... rest of the successful login logic ...
+      } catch (error: any) {
+          // ...
       }
     };
 
