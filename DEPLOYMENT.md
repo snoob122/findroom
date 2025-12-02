@@ -457,10 +457,45 @@ Deploy lên:
 2. Kiểm tra username/password trong connection string
 3. Kiểm tra firewall của VPS (nếu dùng VPS)
 
-### Frontend không gọi được API
-1. Kiểm tra `VITE_API_URL` trong environment variables
-2. Kiểm tra CORS settings trong backend
-3. Kiểm tra network tab trong browser console
+### Frontend không gọi được API - Lỗi 404 "Request failed with status code 404"
+
+**Nguyên nhân phổ biến:**
+- `VITE_API_URL` chưa được cấu hình trong production
+- `VITE_API_URL` được cấu hình sai (sai URL, thiếu https, có trailing slash)
+- Backend chưa được deploy hoặc đã bị tắt
+
+**Cách khắc phục:**
+
+1. **Kiểm tra VITE_API_URL trong Vercel/Render:**
+   - Vào Settings → Environment Variables
+   - Tìm biến `VITE_API_URL`
+   - Đảm bảo giá trị là URL đầy đủ của backend (VD: `https://your-app.railway.app`)
+   - **Lưu ý:** Không có dấu `/` ở cuối URL
+   - Redeploy lại frontend sau khi thay đổi
+
+2. **Kiểm tra Backend đang chạy:**
+   - Mở URL backend trong browser (VD: `https://your-app.railway.app/api/health`)
+   - Nếu thấy `{"status":"OK","message":"Server is running"}` → Backend OK
+   - Nếu không truy cập được → Backend đã bị tắt hoặc chưa deploy
+
+3. **Kiểm tra Console trong Browser:**
+   - Mở Developer Tools (F12) → Console tab
+   - Tìm các thông báo lỗi về API URL
+   - Xem Network tab để kiểm tra URL đang được gọi
+
+4. **Kiểm tra CORS settings trong backend:**
+   - Đảm bảo `CLIENT_URL` trong backend environment variables trỏ đúng frontend URL
+   - Kiểm tra file `backend/server.js` có cấu hình CORS đúng
+
+**Ví dụ cấu hình đúng:**
+```
+VITE_API_URL=https://student-accommodation-backend.railway.app
+```
+KHÔNG phải:
+```
+VITE_API_URL=https://student-accommodation-backend.railway.app/  ❌ (có dấu / ở cuối)
+VITE_API_URL=student-accommodation-backend.railway.app  ❌ (thiếu https://)
+```
 
 ### Build failed
 1. Kiểm tra Node.js version (>= 16)
