@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, Polygon, Circle } from 'react-leaflet';
-import { Icon, divIcon } from 'leaflet';
+import { divIcon } from 'leaflet';
 import axios from '../config/axios';
 import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
+//import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../utils/errorHandler';
 //import { FiMapPin, FiDollarSign } from 'react-icons/fi';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet default icon issue
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+//import icon from 'leaflet/dist/images/marker-icon.png';
+//import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = new Icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41]
-});
+//let DefaultIcon = new Icon({
+//  iconUrl: icon,
+ // shadowUrl: iconShadow,
+ // iconSize: [25, 41],
+ // iconAnchor: [12, 41]
+//});
 
 // Custom icon cho giá thuê
 const createPriceIcon = (color: string) => {

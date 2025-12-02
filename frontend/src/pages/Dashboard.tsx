@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../config/axios';
-import { FiEye, FiHeart, FiDollarSign, FiTrendingUp, FiPlus } from 'react-icons/fi';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { FiEye, FiHeart, FiTrendingUp, FiPlus } from 'react-icons/fi';
+//import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 interface DashboardStats {
   totalListings: number;

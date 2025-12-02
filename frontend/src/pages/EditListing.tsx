@@ -32,7 +32,7 @@ const EditListing = () => {
     status: 'available'
   });
 
-  const roomTypes = [
+  /*const roomTypes = [
     { value: 'single', label: 'Phòng đơn' },
     { value: 'shared', label: 'Phòng ghép' },
     { value: 'apartment', label: 'Căn hộ' },
@@ -43,7 +43,7 @@ const EditListing = () => {
     'Điều hòa', 'Nóng lạnh', 'Tủ lạnh', 'Máy giặt',
     'Wifi', 'Bãi đỗ xe', 'Thang máy', 'An ninh 24/7',
     'Cho phép nấu ăn', 'Gần trường', 'Gần chợ', 'Gần bệnh viện'
-  ];
+  ];*/
 
   useEffect(() => {
     fetchListing();
@@ -81,14 +81,14 @@ const EditListing = () => {
     }
   };
 
-  const handleAmenityToggle = (amenity: string) => {
+  /*const handleAmenityToggle = (amenity: string) => {
     setFormData(prev => ({
       ...prev,
       amenities: prev.amenities.includes(amenity)
         ? prev.amenities.filter(a => a !== amenity)
         : [...prev.amenities, amenity]
     }));
-  };
+  };*/
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
