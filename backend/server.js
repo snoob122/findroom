@@ -32,7 +32,7 @@ const server = http.createServer(app);
 // Socket.io CORS configuration - allow all Vercel preview deployments and dev tunnels
 const socketIoOptions = {
   cors: {
-    origin: function (origin, callback) {
+    /*origin: function (origin, callback) {
       // Allow requests without origin
       if (!origin) return callback(null, true);
       
@@ -66,8 +66,11 @@ const socketIoOptions = {
       }
       
       callback(new Error('Not allowed by CORS'));
-    },
+    },*/
+    origin: '*',
     methods: ['GET', 'POST'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
     credentials: true
   }
 };
@@ -218,7 +221,7 @@ mongoose.connect(MONGODB_URI)
 .then(() => {
   console.log('✅ Connected to MongoDB successfully');
   console.log(`📦 Database: ${MONGODB_URI}`);
-  const PORT = process.env.PORT || 5000;
+  const PORT = process.env.PORT || 5001;
   server.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
   });
