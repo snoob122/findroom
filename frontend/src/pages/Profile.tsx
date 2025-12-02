@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../config/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, Polygon, Circle } from 'react-leaflet';
 import { Icon, divIcon } from 'leaflet';
-import axios from 'axios';
+import axios from '../config/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../utils/errorHandler';

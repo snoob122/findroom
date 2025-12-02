@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import axios from '../config/axios';
 import { FiMapPin } from 'react-icons/fi';
 
 interface DistrictAutocompleteProps {

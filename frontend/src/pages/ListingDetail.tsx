@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../config/axios';
 import { FiMapPin, FiHome, FiUsers, FiCheck, FiHeart, FiStar, FiMessageCircle } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';

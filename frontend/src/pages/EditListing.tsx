@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../config/axios';
 import toast from 'react-hot-toast';
 import MapPicker from '../components/MapPicker';
 import { FiUpload, FiX } from 'react-icons/fi';
