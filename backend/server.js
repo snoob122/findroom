@@ -29,7 +29,7 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io CORS configuration - allow all Vercel preview deployments
+// Socket.io CORS configuration - allow all Vercel preview deployments and dev tunnels
 const socketIoOptions = {
   cors: {
     origin: function (origin, callback) {
@@ -44,6 +44,20 @@ const socketIoOptions = {
       // Allow official CLIENT_URL
       if (origin === process.env.CLIENT_URL) {
         return callback(null, true);
+      }
+      
+      // Allow dev tunnels in development mode
+      const isDevelopment = process.env.NODE_ENV !== 'production';
+      if (isDevelopment) {
+        if (
+          origin.includes('.devtunnels.ms') ||
+          origin.includes('.ngrok.io') ||
+          origin.includes('.ngrok-free.app') ||
+          origin.includes('.loca.lt') ||
+          origin.includes('.tunnel.dev')
+        ) {
+          return callback(null, true);
+        }
       }
       
       // Allow all Vercel preview deployments
@@ -68,42 +82,71 @@ const io = socketIo(server, socketIoOptions);
 // 2. Localhost (development)
 // 3. Official frontend URL from CLIENT_URL environment variable
 // 4. All Vercel preview deployments (*.vercel.app)
+// --- BẮT ĐẦU ĐOẠN CODE THAY THẾ ---
+
+// Danh sách các domain cụ thể được phép truy cập
+const allowedOrigins = [
+  "http://localhost:5173",             // <--- Đã thêm Vite Localhost vào đây
+  "http://localhost:3000",             // Thêm dự phòng
+  process.env.CLIENT_URL               // Link chính thức trên Vercel
+];
+
 const corsOptions = {
   origin: function (origin, callback) {
     // 1. Cho phép request từ Postman hoặc Server-to-Server (không có origin)
     if (!origin) return callback(null, true);
+
+    // 2. Kiểm tra xem origin có nằm trong danh sách cụ thể ở trên không
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
     
-    // 2. Kiểm tra Localhost (development)
+    // 3. Kiểm tra Localhost (development) - Cho phép mọi port localhost
     if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
       return callback(null, true);
     }
     
-    // 3. Kiểm tra Link chính thức (từ biến môi trường)
-    if (origin === process.env.CLIENT_URL) {
-      return callback(null, true);
+    // 4. Kiểm tra Dev Tunnels (chỉ cho phép khi chạy local/development)
+    // Cho phép VS Code Dev Tunnels, ngrok, và các dev tunnel services khác
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    if (isDevelopment) {
+      // Cho phép các dev tunnel services phổ biến
+      if (
+        origin.includes('.devtunnels.ms') ||  // VS Code Dev Tunnels
+        origin.includes('.ngrok.io') ||        // ngrok
+        origin.includes('.ngrok-free.app') ||   // ngrok free
+        origin.includes('.loca.lt') ||          // localtunnel
+        origin.includes('.tunnel.dev')          // cloudflare tunnel
+      ) {
+        console.log('✅ Allowed dev tunnel:', origin);
+        return callback(null, true);
+      }
     }
     
-    // 4. Kiểm tra các link Preview của Vercel (Quan trọng!)
-    // Cho phép tất cả các sub-domain của vercel.app
+    // 5. Kiểm tra các link Preview của Vercel (Quan trọng!)
     if (origin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
     
-    // Nếu không khớp cái nào thì chặn
+    // Nếu không khớp cái nào thì chặn và Log ra để debug
     console.log('⚠️  CORS blocked origin:', origin);
-    console.log('💡 Allowed: localhost, CLIENT_URL, or *.vercel.app');
+    console.log('💡 Allowed: localhost, CLIENT_URL, *.vercel.app' + (isDevelopment ? ', dev tunnels' : ''));
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 };
 
+// --- KẾT THÚC ĐOẠN CODE THAY THẾ ---
+
 // Log CORS configuration on startup
+const isDevelopment = process.env.NODE_ENV !== 'production';
 console.log('🌐 CORS Configuration:');
+console.log('  - Environment:', isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION');
 console.log('  - Backend URL: https://findroom-qd83.onrender.com');
 console.log('  - CLIENT_URL:', process.env.CLIENT_URL || 'Not set');
-console.log('  - Allowed: localhost, CLIENT_URL, and all *.vercel.app domains');
+console.log('  - Allowed: localhost, CLIENT_URL, *.vercel.app' + (isDevelopment ? ', dev tunnels (*.devtunnels.ms, *.ngrok.io, etc.)' : ''));
 
 // Middleware
 app.use(helmet());
