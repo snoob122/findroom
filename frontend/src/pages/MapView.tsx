@@ -5,7 +5,7 @@ import axios from '../config/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../utils/errorHandler';
-import { FiMapPin, FiDollarSign } from 'react-icons/fi';
+//import { FiMapPin, FiDollarSign } from 'react-icons/fi';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet default icon issue
@@ -264,7 +264,7 @@ const MapView = () => {
   };
 
   const [showFloodReportModal, setShowFloodReportModal] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  //const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   return (
     <div className="h-[calc(100vh-4rem)] relative">
@@ -653,7 +653,7 @@ const FloodReportModal = ({ onClose, onSuccess }: FloodReportModalProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  //const { user } = useAuth();
 
   useEffect(() => {
     // Lấy vị trí hiện tại của user
