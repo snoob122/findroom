@@ -29,19 +29,28 @@ const getApiUrl = () => {
 
 const API_URL = getApiUrl();
 
-// Log API URL in development for debugging
-if (import.meta.env.DEV) {
-  console.log('🔧 API URL:', API_URL || 'Using proxy (vite.config.ts)');
-}
+// Log API URL for debugging (both dev and production)
+console.log('🔧 Axios Configuration:');
+console.log('  - Environment:', import.meta.env.PROD ? 'PRODUCTION' : 'DEVELOPMENT');
+console.log('  - VITE_API_URL:', import.meta.env.VITE_API_URL || 'NOT SET');
+console.log('  - API Base URL:', API_URL || 'Using relative URLs (proxy)');
 
 // Create axios instance with default config
+// In production, baseURL MUST be set, otherwise requests will go to frontend domain
 const axiosInstance = axios.create({
-  baseURL: API_URL || undefined, // If empty string, axios will use relative URLs
+  baseURL: API_URL, // Will be undefined if empty string, which causes relative URLs
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 second timeout
 });
+
+// Warn if baseURL is not set in production
+if (import.meta.env.PROD && !API_URL) {
+  console.error('🚨 CRITICAL: API baseURL is not set in production!');
+  console.error('🚨 All API requests will fail or go to wrong domain!');
+  console.error('🚨 Please set VITE_API_URL environment variable on Vercel!');
+}
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
