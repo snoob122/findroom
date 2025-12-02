@@ -71,7 +71,7 @@ const socketIoOptions = {
       callback(new Error('Not allowed by CORS'));
     },
     methods: ['GET', 'POST'],
-    credentials: true
+    credentials: false
   }
 };
 
@@ -137,7 +137,7 @@ const corsOptions = {
     console.log('💡 Allowed: localhost, CLIENT_URL, *.vercel.app' + (isDevelopment ? ', dev tunnels' : ''));
     return callback(new Error('Not allowed by CORS'));
   },
-  credentials: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 };
@@ -154,10 +154,7 @@ console.log('  - Allowed: localhost, CLIENT_URL, *.vercel.app' + (isDevelopment 
 
 // Middleware
 app.use(helmet());
-app.use(cors({
-  origin: 'https://student-accommodation-frontend.onrender.com',
-  credentials: true
-}));
+app.use(cors());
 app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
