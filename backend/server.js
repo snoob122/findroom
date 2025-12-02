@@ -28,47 +28,82 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
+
+// Socket.io CORS configuration - allow all Vercel preview deployments
+const socketIoOptions = {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    origin: function (origin, callback) {
+      // Allow requests without origin
+      if (!origin) return callback(null, true);
+      
+      // Allow localhost
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+      
+      // Allow official CLIENT_URL
+      if (origin === process.env.CLIENT_URL) {
+        return callback(null, true);
+      }
+      
+      // Allow all Vercel preview deployments
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+      
+      callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST'],
+    credentials: true
   }
-});
+};
+
+const io = socketIo(server, socketIoOptions);
 
 // CORS configuration
 // Backend URL: https://findroom-qd83.onrender.com
 // Frontend URL: https://findroom2-sonlamlamdevs-projects.vercel.app
-// Frontend URL should be set in CLIENT_URL environment variable on Render
-const allowedOrigins = [
-  process.env.CLIENT_URL, // Frontend URL from environment variable (set on Render)
-  'http://localhost:5173', // Development
-  'https://findroom2-sonlamlamdevs-projects.vercel.app' // Frontend URL (fallback)
-].filter(Boolean); // Remove any undefined/null values
-
-// Log allowed origins on startup for debugging
-console.log('🌐 CORS Allowed Origins:', allowedOrigins.length > 0 ? allowedOrigins : 'None configured (using default)');
-console.log('🔗 Backend URL: https://findroom-qd83.onrender.com');
-console.log('🔗 Frontend URL (CLIENT_URL):', process.env.CLIENT_URL || 'Not set');
-
+// This configuration allows:
+// 1. Requests without origin (Postman, Server-to-Server)
+// 2. Localhost (development)
+// 3. Official frontend URL from CLIENT_URL environment variable
+// 4. All Vercel preview deployments (*.vercel.app)
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // 1. Cho phép request từ Postman hoặc Server-to-Server (không có origin)
     if (!origin) return callback(null, true);
     
-    // Check if origin is in allowed list
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      // Log for debugging
-      console.log('⚠️  CORS blocked origin:', origin);
-      console.log('✅ Allowed origins:', allowedOrigins);
-      callback(new Error('Not allowed by CORS'));
+    // 2. Kiểm tra Localhost (development)
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
     }
+    
+    // 3. Kiểm tra Link chính thức (từ biến môi trường)
+    if (origin === process.env.CLIENT_URL) {
+      return callback(null, true);
+    }
+    
+    // 4. Kiểm tra các link Preview của Vercel (Quan trọng!)
+    // Cho phép tất cả các sub-domain của vercel.app
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Nếu không khớp cái nào thì chặn
+    console.log('⚠️  CORS blocked origin:', origin);
+    console.log('💡 Allowed: localhost, CLIENT_URL, or *.vercel.app');
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+// Log CORS configuration on startup
+console.log('🌐 CORS Configuration:');
+console.log('  - Backend URL: https://findroom-qd83.onrender.com');
+console.log('  - CLIENT_URL:', process.env.CLIENT_URL || 'Not set');
+console.log('  - Allowed: localhost, CLIENT_URL, and all *.vercel.app domains');
 
 // Middleware
 app.use(helmet());
