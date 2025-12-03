@@ -3,8 +3,6 @@ const router = express.Router();
 const Listing = require('../models/Listing');
 const { auth, isLandlord } = require('../middleware/auth');
 const upload = require('../middleware/upload');
-const Listing = require('../models/Listing');
-const upload = require('../middleware/upload');
 
 // Get all listings with filters
 router.get('/', async (req, res) => {
