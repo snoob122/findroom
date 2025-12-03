@@ -171,12 +171,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
+// PROXY FIX
 // Rate limiting
+app.set('trust proxy', 1);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 });
 app.use('/api/', limiter);
+
+
+//PROXY FIX
+app.use(express.json());
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/uploads', require('./routes/upload'));
 
 // Socket.io for real-time notifications
 io.on('connection', (socket) => {
