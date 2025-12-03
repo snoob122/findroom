@@ -4,6 +4,9 @@ const Listing = require('../models/Listing');
 const { auth, isLandlord } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 // Get all listings with filters
 router.get('/', async (req, res) => {
   try {
@@ -372,43 +375,32 @@ router.post('/:id/track-keyword', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });*/
-router.post('/:id/track-keyword', upload.single('image'), async (req, res) => {
+router.post('/create', upload.single('image'), async (req, res) => {
   try {
-    const { keyword } = req.body;
-    const listing = await Listing.findById(req.params.id);
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    if (!listing) {
-      return res.status(404).json({ error: "Listing not found" });
-    }
-
-    // 1️⃣ Track keyword
-    if (keyword) {
-      const existingKeyword = listing.searchKeywords.find(k => k.keyword === keyword);
-
-      if (existingKeyword) {
-        existingKeyword.count += 1;
-      } else {
-        listing.searchKeywords.push({ keyword, count: 1 });
-      }
-    }
-
-    // 2️⃣ Upload image to Cloudinary
-    if (req.file) {
-      listing.images.push({
-        url: req.file.path,      // Cloudinary URL
-        public_id: req.file.filename
-      });
-    }
-
-    await listing.save();
-
-    res.json({
-      message: 'Keyword tracked + image uploaded',
-      imageUrl: req.file?.path
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: 'listings' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
     });
 
-  } catch (error) {
-    console.error(error);
+    // Create listing
+    const newListing = new Listing({
+      ...req.body,
+      imageUrl: result.secure_url,
+      imagePublicId: result.public_id
+    });
+
+    await newListing.save();
+    res.json({ message: 'Listing created successfully', listing: newListing });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 });
