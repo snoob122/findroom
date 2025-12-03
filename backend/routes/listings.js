@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const Listing = require('../models/Listing');
 const { auth, isLandlord } = require('../middleware/auth');
 //const upload = require('../middleware/upload');
