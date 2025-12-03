@@ -3,6 +3,9 @@ const router = express.Router();
 const Listing = require('../models/Listing');
 const { auth, isLandlord } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const express = require('express');
+const Listing = require('../models/Listing');
+const upload = require('../middleware/upload');
 
 // Get all listings with filters
 router.get('/', async (req, res) => {
@@ -349,6 +352,7 @@ router.patch('/:id/status', auth, isLandlord, async (req, res) => {
 });
 
 // Track search keyword
+/*
 router.post('/:id/track-keyword', async (req, res) => {
   try {
     const { keyword } = req.body;
@@ -370,17 +374,44 @@ router.post('/:id/track-keyword', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
-});
-
-// Get landlord's listings
-router.get('/landlord/:landlordId', async (req, res) => {
+});*/
+router.post('/:id/track-keyword', upload.single('image'), async (req, res) => {
   try {
-    const listings = await Listing.find({ 
-      landlord: req.params.landlordId 
-    }).sort('-createdAt');
+    const { keyword } = req.body;
+    const listing = await Listing.findById(req.params.id);
 
-    res.json({ listings });
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    // 1️⃣ Track keyword
+    if (keyword) {
+      const existingKeyword = listing.searchKeywords.find(k => k.keyword === keyword);
+
+      if (existingKeyword) {
+        existingKeyword.count += 1;
+      } else {
+        listing.searchKeywords.push({ keyword, count: 1 });
+      }
+    }
+
+    // 2️⃣ Upload image to Cloudinary
+    if (req.file) {
+      listing.images.push({
+        url: req.file.path,      // Cloudinary URL
+        public_id: req.file.filename
+      });
+    }
+
+    await listing.save();
+
+    res.json({
+      message: 'Keyword tracked + image uploaded',
+      imageUrl: req.file?.path
+    });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
