@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('../models/Listing');
 const { auth, isLandlord } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+//const upload = require('../middleware/upload');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
